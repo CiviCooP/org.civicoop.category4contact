@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS `civicrm_contact_category_role` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `category_id` INT NULL,
-  `contact_id` INT NULL,
-  `role_type_id` INT NULL,
+  `category_id` INT DEFAULT NULL,
+  `contact_id` INT DEFAULT NULL,
+  `role_type_id` INT DEFAULT 1,
   `start_date` DATE,
   `end_date` DATE,
   `is_active` TINYINT NULL,

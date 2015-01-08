@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @author Erik Hommel (CiviCooP) <erik.hommel@civicoop.org>
+ * @license http://www.gnu.org/licenses/agpl-3.0.html
+ */
 require_once 'category4contact.civix.php';
 
 /**
@@ -46,6 +49,10 @@ function category4contact_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function category4contact_civicrm_enable() {
+  /*
+   * create required option group for role type if not exist yet
+   */
+  CRM_Category4contact_RoleType::create_role_type_option_group();
   return _category4contact_civix_civicrm_enable();
 }
 
@@ -105,4 +112,34 @@ function category4contact_civicrm_caseTypes(&$caseTypes) {
  */
 function category4contact_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _category4contact_civix_civicrm_alterSettingsFolders($metaDataFolders);
+}
+/**
+ * Implementation of hook civicrm_navigationMenu
+ * 
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ */
+function category4contact_civicrm_navigationMenu( &$params ) {
+    $itemMain = array (
+        'name'          =>  ts('Categories for Contact'),
+        'url'           =>  CRM_Utils_System::url('civicrm/categorylist', '', true),
+        'permission'    => 'administer CiviCRM',
+    );
+    _category4contact_civix_insert_navigation_menu($params, 'Administer', $itemMain);
+}
+/**
+ * Implementation of hook civicrm_tabs to add a tab for Category
+ * 
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_tabs
+ */
+function category4contact_civicrm_tabs(&$tabs, $contact_id) {
+  $role_count = CRM_Contact4category_BAO_Role::get_contact_count($contact_id);
+  $category4contact_config = CRM_Category4contact_Config::singleton();
+  $title = $category4contact_config->get_category_label();
+  $role_url = CRM_Utils_System::url('civicrm/categoryrolelist','snippet=1&cid='.$contact_id);
+  $tabs[] = array( 
+    'id'    => 'category_roles',
+    'url'       => $role_url,
+    'title'     => $title,
+    'weight'    => 99,
+    'count'     => $role_count);
 }
